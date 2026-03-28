@@ -1,4 +1,5 @@
-import { Bell, Search } from 'lucide-react'
+import { Bell, Search, LogOut } from 'lucide-react'
+import { useAuth } from '../../auth'
 
 const titles: Record<string, string> = {
   dashboard: 'Vue d\'ensemble',
@@ -9,6 +10,8 @@ const titles: Record<string, string> = {
 }
 
 export default function Header({ page }: { page: string }) {
+  const { user, logout } = useAuth()
+
   return (
     <header className="bg-white border-b border-slate-200 px-8 py-4 flex items-center justify-between">
       <div>
@@ -28,6 +31,24 @@ export default function Header({ page }: { page: string }) {
           <Bell size={18} />
           <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full" />
         </button>
+        {user && (
+          <div className="flex items-center gap-2 pl-3 border-l border-slate-200">
+            <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center">
+              <span className="text-white text-xs font-semibold">{user.initials}</span>
+            </div>
+            <div className="hidden sm:block">
+              <p className="text-xs font-medium text-slate-700">{user.name}</p>
+              <p className="text-xs text-slate-400 capitalize">{user.role}</p>
+            </div>
+            <button
+              onClick={logout}
+              title="Se déconnecter"
+              className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors ml-1"
+            >
+              <LogOut size={16} />
+            </button>
+          </div>
+        )}
       </div>
     </header>
   )

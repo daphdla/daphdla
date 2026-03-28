@@ -1,6 +1,8 @@
 import { useState } from 'react'
+import { AuthProvider, useAuth } from './auth'
 import Sidebar from './components/Layout/Sidebar'
 import Header from './components/Layout/Header'
+import LoginPage from './components/Auth/LoginPage'
 import Overview from './components/Dashboard/Overview'
 import PortfolioList from './components/Portfolio/PortfolioList'
 import DealPipeline from './components/Deals/DealPipeline'
@@ -17,10 +19,13 @@ const pages: Record<Page, React.ComponentType> = {
   metrics: KPIMetrics
 }
 
-export default function App() {
+function AppShell() {
+  const { user } = useAuth()
   const [page, setPage] = useState<Page>('dashboard')
-  const PageComponent = pages[page]
 
+  if (!user) return <LoginPage />
+
+  const PageComponent = pages[page]
   return (
     <div className="flex min-h-screen">
       <Sidebar current={page} onChange={setPage} />
@@ -31,5 +36,13 @@ export default function App() {
         </main>
       </div>
     </div>
+  )
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppShell />
+    </AuthProvider>
   )
 }
