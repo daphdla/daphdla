@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { fetchDeals } from '../../api'
 import type { Deal } from '../../types'
+import DealDetail from './DealDetail'
 
 const fmt = (n: number) => {
   if (n >= 1_000_000) return `€${(n / 1_000_000).toFixed(0)}M`
@@ -27,6 +28,7 @@ export default function DealPipeline() {
   const [deals, setDeals] = useState<Deal[]>([])
   const [loading, setLoading] = useState(true)
   const [view, setView] = useState<'kanban' | 'table'>('kanban')
+  const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null)
 
   useEffect(() => {
     fetchDeals().then(data => { setDeals(data); setLoading(false) })
@@ -41,6 +43,10 @@ export default function DealPipeline() {
   }
 
   const totalPipeline = deals.reduce((s, d) => s + d.targetValuation, 0)
+
+  if (selectedDeal) {
+    return <DealDetail deal={selectedDeal} onBack={() => setSelectedDeal(null)} />
+  }
 
   return (
     <div className="space-y-5">
@@ -92,14 +98,18 @@ export default function DealPipeline() {
                 </div>
                 <div className="space-y-2">
                   {stageDeals.map(deal => (
-                    <div key={deal.id} className="bg-white rounded-lg p-3 shadow-sm cursor-pointer hover:shadow-md transition-shadow">
+                    <div
+                      key={deal.id}
+                      onClick={() => setSelectedDeal(deal)}
+                      className="bg-white rounded-lg p-3 shadow-sm cursor-pointer hover:shadow-md hover:ring-2 hover:ring-blue-200 transition-all"
+                    >
                       <div className="flex items-start justify-between gap-1 mb-2">
                         <p className="text-sm font-semibold text-slate-800 leading-tight">{deal.company}</p>
                         <span className={`badge text-xs shrink-0 ${priorityColor[deal.priority]}`}>{deal.priority}</span>
                       </div>
                       <p className="text-xs text-slate-400 mb-2">{deal.sector} · {deal.country}</p>
                       <p className="text-sm font-bold text-blue-600">{fmt(deal.targetValuation)}</p>
-                      <p className="text-xs text-slate-400 mt-1">{deal.equity}% equity cible</p>
+                      <p className="text-xs text-slate-400 mt-1">{deal.targetEquity}% equity cible</p>
                       <div className="mt-2 pt-2 border-t border-slate-100">
                         <p className="text-xs text-slate-500">Owner: {deal.owner}</p>
                       </div>
@@ -131,9 +141,13 @@ export default function DealPipeline() {
             </thead>
             <tbody className="divide-y divide-slate-50">
               {deals.map(d => (
-                <tr key={d.id} className="hover:bg-slate-50 transition-colors">
+                <tr
+                  key={d.id}
+                  onClick={() => setSelectedDeal(d)}
+                  className="hover:bg-blue-50 cursor-pointer transition-colors"
+                >
                   <td className="table-td">
-                    <p className="font-medium text-slate-800">{d.company}</p>
+                    <p className="font-medium text-slate-800 hover:text-blue-700">{d.company}</p>
                     <p className="text-xs text-slate-400">{d.country}</p>
                   </td>
                   <td className="table-td text-xs">{d.sector}</td>

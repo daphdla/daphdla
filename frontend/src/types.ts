@@ -19,6 +19,24 @@ export interface PortfolioCompany {
   currency: string
 }
 
+export interface DealMilestone {
+  id: number
+  date: string
+  label: string
+  status: 'done' | 'upcoming'
+  type: 'contact' | 'legal' | 'meeting' | 'diligence' | 'closing'
+}
+
+export interface DealLBO {
+  entryEBITDA: number
+  exitEBITDA: number
+  entryMultiple: number
+  exitMultiple: number
+  leverageRatio: number
+  holdingPeriod: number
+  ebitdaGrowthRate: number
+}
+
 export interface Deal {
   id: number
   company: string
@@ -33,6 +51,9 @@ export interface Deal {
   owner: string
   priority: string
   notes: string
+  thesis?: string
+  lbo?: DealLBO
+  milestones?: DealMilestone[]
 }
 
 export interface LP {

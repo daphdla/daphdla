@@ -125,7 +125,27 @@ const deals = [
     contactDate: "2026-01-10",
     owner: "Marie Dubois",
     priority: "High",
-    notes: "Leader sur le marché UK, forte croissance ARR +85% YoY"
+    notes: "Leader sur le marché UK, forte croissance ARR +85% YoY",
+    thesis: "CyberShield est le leader de la cybersécurité SMB en UK avec une plateforme SaaS MDR (Managed Detection & Response) entièrement propriétaire. La société bénéficie d'une croissance ARR de +85% YoY grâce à un modèle de distribution indirect (500+ revendeurs) et d'un NRR de 128%. La thèse d'investissement repose sur trois piliers : (1) accélération de la croissance internationale via expansion en Europe continentale (DACH + Benelux), (2) montée en gamme vers le segment Mid-Market avec lancement d'une offre Enterprise, et (3) croissance externe via acquisitions de MSSP régionaux. Le marché adressable européen de la cybersécurité SMB est estimé à €8Md et croît à 18% par an. L'équipe fondatrice a déjà piloté une exit (Sophos, 2016).",
+    lbo: {
+      entryEBITDA: 3200000,
+      exitEBITDA: 7800000,
+      entryMultiple: 17.2,
+      exitMultiple: 15.0,
+      leverageRatio: 0.45,
+      holdingPeriod: 5,
+      ebitdaGrowthRate: 19.5
+    },
+    milestones: [
+      { id: 1, date: "2026-01-10", label: "Premier contact", status: "done", type: "contact" },
+      { id: 2, date: "2026-01-28", label: "NDA signé", status: "done", type: "legal" },
+      { id: 3, date: "2026-02-10", label: "Management presentation", status: "done", type: "meeting" },
+      { id: 4, date: "2026-03-05", label: "Entrée en Due Diligence", status: "done", type: "diligence" },
+      { id: 5, date: "2026-04-15", label: "Rapport DD financière", status: "upcoming", type: "diligence" },
+      { id: 6, date: "2026-05-01", label: "Rapport DD technique", status: "upcoming", type: "diligence" },
+      { id: 7, date: "2026-05-20", label: "Term Sheet", status: "upcoming", type: "legal" },
+      { id: 8, date: "2026-07-01", label: "Closing prévu", status: "upcoming", type: "closing" }
+    ]
   },
   {
     id: 2,
@@ -140,7 +160,28 @@ const deals = [
     contactDate: "2025-11-20",
     owner: "Thomas Laurent",
     priority: "High",
-    notes: "Pipeline produits très solide, brevets exclusifs"
+    notes: "Pipeline produits très solide, brevets exclusifs",
+    thesis: "BioLab Diagnostics est un acteur de référence dans le diagnostic in vitro de précision en Suisse et en Autriche. La société dispose d'un portefeuille de 12 brevets exclusifs sur des biomarqueurs oncologiques et bénéficie de contrats long terme avec 47 hôpitaux universitaires. La thèse repose sur : (1) le déploiement européen des tests existants (CE-IVD obtenus), avec une cible de 150 hôpitaux supplémentaires d'ici 2028, (2) la commercialisation de 3 nouveaux panels diagnostiques en phase III de développement, et (3) une stratégie de partenariats OEM avec des acteurs pharma tier-1 pour intégration dans leurs essais cliniques. Le marché du diagnostic oncologique croît à +15% pa en Europe et BioLab affiche déjà des marges EBITDA de 28%, témoignant d'un modèle très scalable.",
+    lbo: {
+      entryEBITDA: 5400000,
+      exitEBITDA: 14200000,
+      entryMultiple: 14.8,
+      exitMultiple: 14.0,
+      leverageRatio: 0.40,
+      holdingPeriod: 5,
+      ebitdaGrowthRate: 21.3
+    },
+    milestones: [
+      { id: 1, date: "2025-11-20", label: "Premier contact (conférence MedTech Europe)", status: "done", type: "contact" },
+      { id: 2, date: "2025-12-05", label: "NDA et accès à la dataroom", status: "done", type: "legal" },
+      { id: 3, date: "2026-01-15", label: "Présentation management 2 jours", status: "done", type: "meeting" },
+      { id: 4, date: "2026-02-01", label: "Due Diligence scientifique", status: "done", type: "diligence" },
+      { id: 5, date: "2026-03-10", label: "Due Diligence financière", status: "done", type: "diligence" },
+      { id: 6, date: "2026-03-20", label: "Term Sheet soumis", status: "done", type: "legal" },
+      { id: 7, date: "2026-04-05", label: "Négociation Term Sheet", status: "upcoming", type: "legal" },
+      { id: 8, date: "2026-05-15", label: "Signing", status: "upcoming", type: "closing" },
+      { id: 9, date: "2026-06-01", label: "Closing", status: "upcoming", type: "closing" }
+    ]
   },
   {
     id: 3,
@@ -155,7 +196,23 @@ const deals = [
     contactDate: "2026-02-28",
     owner: "Sophie Martin",
     priority: "Medium",
-    notes: "Fort potentiel sur le marché B2B corporate training"
+    notes: "Fort potentiel sur le marché B2B corporate training",
+    thesis: "EduTech Platform adresse le marché du corporate learning & development avec une plateforme IA-first de création et déploiement de contenus de formation. La société a pivoté avec succès vers le B2B en 2024, générant désormais 78% de son CA sur des contrats annuels récurrents. La thèse repose sur (1) la capitalisation sur la dynamique réglementaire EU (directive sur la formation continue), (2) l'expansion du module IA génératif pour création de contenus multilingues, et (3) l'internationalisation vers le marché DACH dès 2027. Le marché L&D B2B européen est estimé à €4,5Md et croît à +22% pa post-pandémie.",
+    lbo: {
+      entryEBITDA: 900000,
+      exitEBITDA: 3200000,
+      entryMultiple: 24.4,
+      exitMultiple: 18.0,
+      leverageRatio: 0.30,
+      holdingPeriod: 5,
+      ebitdaGrowthRate: 28.8
+    },
+    milestones: [
+      { id: 1, date: "2026-02-28", label: "Premier contact (intro réseau)", status: "done", type: "contact" },
+      { id: 2, date: "2026-03-15", label: "Call exploratoire équipe fondatrice", status: "upcoming", type: "meeting" },
+      { id: 3, date: "2026-04-10", label: "NDA + pitch deck complet", status: "upcoming", type: "legal" },
+      { id: 4, date: "2026-05-01", label: "Décision Go / No-Go", status: "upcoming", type: "diligence" }
+    ]
   },
   {
     id: 4,
@@ -170,7 +227,22 @@ const deals = [
     contactDate: "2026-03-05",
     owner: "Pierre Moreau",
     priority: "Low",
-    notes: "Technologie innovante mais marché encore émergent"
+    notes: "Technologie innovante mais marché encore émergent",
+    thesis: "AgriSmart IoT développe des capteurs connectés et une plateforme d'analyse prédictive pour l'agriculture de précision. La société dispose d'une technologie propriétaire de capteurs LoRaWAN basse consommation et d'algorithmes ML pour la prédiction des rendements et la détection précoce des maladies. Malgré un marché encore en structuration, AgriSmart bénéficie d'un time-to-market favorable grâce aux subventions EU (Green Deal) et à la pression réglementaire sur la réduction des intrants chimiques. La thèse est conditionnée à l'atteinte d'un ARR de €2M et à la signature d'au moins 2 partenariats distributeurs de taille nationale avant tout investissement.",
+    lbo: {
+      entryEBITDA: 400000,
+      exitEBITDA: 2100000,
+      entryMultiple: 45.0,
+      exitMultiple: 20.0,
+      leverageRatio: 0.20,
+      holdingPeriod: 5,
+      ebitdaGrowthRate: 39.3
+    },
+    milestones: [
+      { id: 1, date: "2026-03-05", label: "Sourcing via réseau agricole", status: "done", type: "contact" },
+      { id: 2, date: "2026-04-01", label: "Analyse marché & tech screening", status: "upcoming", type: "diligence" },
+      { id: 3, date: "2026-05-15", label: "Décision go/no-go investissement", status: "upcoming", type: "diligence" }
+    ]
   },
   {
     id: 5,
@@ -185,7 +257,29 @@ const deals = [
     contactDate: "2025-10-15",
     owner: "Marie Dubois",
     priority: "High",
-    notes: "Top 3 en Europe, SLA 99.99%, NRR > 130%"
+    notes: "Top 3 en Europe, SLA 99.99%, NRR > 130%",
+    thesis: "CloudOps Pro est l'un des trois leaders européens de la plateforme DevSecOps cloud-native, avec une position dominante en DACH et une expansion en cours au Benelux et en Scandinavie. La société affiche un NRR exceptionnel de 132%, un churn < 2% annuel et un SLA garanti à 99.99%. La thèse d'investissement repose sur : (1) accélération de l'expansion géographique (UK, France, Nordics) en s'appuyant sur le réseau de distribution d'un partenaire stratégique hyper-scaleur (AWS/Azure), (2) développement d'une couche IA pour l'optimisation automatique des workloads cloud (roadmap 12 mois), et (3) stratégie M&A sur des complémentaires technologiques (observability, finops). La dynamique de migration cloud des entreprises européennes crée un TAM de €12Md d'ici 2028.",
+    lbo: {
+      entryEBITDA: 4900000,
+      exitEBITDA: 11500000,
+      entryMultiple: 9.8,
+      exitMultiple: 12.0,
+      leverageRatio: 0.50,
+      holdingPeriod: 5,
+      ebitdaGrowthRate: 18.6
+    },
+    milestones: [
+      { id: 1, date: "2025-10-15", label: "Premier contact (référence CEO portfolio)", status: "done", type: "contact" },
+      { id: 2, date: "2025-11-01", label: "NDA signé", status: "done", type: "legal" },
+      { id: 3, date: "2025-11-20", label: "Management presentation (Munich)", status: "done", type: "meeting" },
+      { id: 4, date: "2025-12-10", label: "Due Diligence financière & tech", status: "done", type: "diligence" },
+      { id: 5, date: "2026-01-15", label: "Rapport de DD complet", status: "done", type: "diligence" },
+      { id: 6, date: "2026-02-05", label: "IC (Investment Committee) — accord de principe", status: "done", type: "meeting" },
+      { id: 7, date: "2026-03-01", label: "LOI signée", status: "done", type: "legal" },
+      { id: 8, date: "2026-04-10", label: "Négociation SHA & SPA", status: "upcoming", type: "legal" },
+      { id: 9, date: "2026-05-15", label: "Signing", status: "upcoming", type: "closing" },
+      { id: 10, date: "2026-06-01", label: "Closing — Transfer funds", status: "upcoming", type: "closing" }
+    ]
   }
 ];
 
