@@ -1,0 +1,135 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  ANALYST
+  LP
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         Role     @default(ANALYST)
+  initials     String
+  lpId         Int?
+  lp           LP?      @relation(fields: [lpId], references: [id])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model PortfolioCompany {
+  id               Int       @id @default(autoincrement())
+  name             String
+  sector           String
+  country          String
+  entryDate        DateTime
+  entryValuation   Float
+  currentValuation Float
+  equity           Float
+  revenue          Float
+  ebitda           Float
+  employees        Int
+  stage            String
+  status           String
+  irr              Float
+  moic             Float
+  exitDate         DateTime?
+  exitValuation    Float?
+  currency         String    @default("EUR")
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+}
+
+model Deal {
+  id              Int             @id @default(autoincrement())
+  company         String
+  sector          String
+  country         String
+  stage           String
+  targetValuation Float
+  targetEquity    Float
+  revenue         Float
+  ebitda          Float
+  contactDate     DateTime
+  owner           String
+  priority        String
+  notes           String          @db.Text
+  thesis          String?         @db.Text
+  lbo             DealLBO?
+  milestones      DealMilestone[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+model DealLBO {
+  id               Int   @id @default(autoincrement())
+  dealId           Int   @unique
+  deal             Deal  @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  entryEBITDA      Float
+  exitEBITDA       Float
+  entryMultiple    Float
+  exitMultiple     Float
+  leverageRatio    Float
+  holdingPeriod    Int
+  ebitdaGrowthRate Float
+}
+
+model DealMilestone {
+  id     Int      @id @default(autoincrement())
+  dealId Int
+  deal   Deal     @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  date   DateTime
+  label  String
+  status String   // "done" | "upcoming"
+  type   String   // "contact" | "legal" | "meeting" | "diligence" | "closing"
+}
+
+model LP {
+  id          Int      @id @default(autoincrement())
+  name        String
+  type        String
+  country     String
+  commitment  Float
+  called      Float
+  distributed Float
+  nav         Float
+  dpi         Float
+  tvpi        Float
+  irr         Float
+  vintage     Int
+  currency    String   @default("EUR")
+  users       User[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model FundConfig {
+  id               Int    @id @default(1)
+  fundName         String
+  fundSize         Float
+  vintage          Int
+  currency         String @default("EUR")
+  totalCommitted   Float
+  totalCalled      Float
+  totalDistributed Float
+  totalNAV         Float
+  grossIRR         Float
+  netIRR           Float
+  grossMOIC        Float
+  netMOIC          Float
+  dpi              Float
+  tvpi             Float
+  rvpi             Float
+  navByQuarter     Json
+  sectorAllocation Json
+  geoAllocation    Json
+}

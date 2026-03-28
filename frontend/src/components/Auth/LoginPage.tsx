@@ -2,6 +2,13 @@ import { useState, type FormEvent } from 'react'
 import { useAuth } from '../../auth'
 import { Lock, Mail, Eye, EyeOff, AlertCircle } from 'lucide-react'
 
+const DEMO_ACCOUNTS = [
+  { email: 'admin@fund.eu',    password: 'Admin2024!',   role: 'Administrateur' },
+  { email: 'analyst@fund.eu',  password: 'Analyst2024!', role: 'Analyste' },
+  { email: 'lp@axafund.eu',    password: 'LP2024!',      role: 'LP — AXA' },
+  { email: 'lp@sovereign.de',  password: 'LP2024!',      role: 'LP — Sovereign Capital' },
+]
+
 export default function LoginPage() {
   const { login } = useAuth()
   const [email, setEmail] = useState('')
@@ -26,10 +33,15 @@ export default function LoginPage() {
     }
   }
 
+  function fillDemo(acc: typeof DEMO_ACCOUNTS[0]) {
+    setEmail(acc.email)
+    setPassword(acc.password)
+    setError('')
+  }
+
   return (
     <div className="min-h-screen bg-slate-900 flex items-center justify-center px-4">
       <div className="w-full max-w-md">
-        {/* Logo */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-blue-600 mb-4">
             <span className="text-white font-bold text-xl">PE</span>
@@ -38,7 +50,6 @@ export default function LoginPage() {
           <p className="text-slate-400 text-sm mt-1">Accès sécurisé au dashboard</p>
         </div>
 
-        {/* Card */}
         <div className="bg-white rounded-2xl p-8 shadow-2xl">
           <h2 className="text-slate-800 text-lg font-semibold mb-6">Connexion</h2>
 
@@ -51,9 +62,7 @@ export default function LoginPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1.5">
-                Adresse email
-              </label>
+              <label className="block text-xs font-medium text-slate-600 mb-1.5">Email</label>
               <div className="relative">
                 <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
@@ -63,15 +72,13 @@ export default function LoginPage() {
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   placeholder="prenom@fund.eu"
-                  className="w-full pl-9 pr-4 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full pl-9 pr-4 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1.5">
-                Mot de passe
-              </label>
+              <label className="block text-xs font-medium text-slate-600 mb-1.5">Mot de passe</label>
               <div className="relative">
                 <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
@@ -81,7 +88,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-9 pr-10 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full pl-9 pr-10 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <button
                   type="button"
@@ -97,7 +104,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-medium py-2.5 rounded-lg text-sm transition-colors mt-2"
+              className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-medium py-2.5 rounded-lg text-sm transition-colors"
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
@@ -109,17 +116,24 @@ export default function LoginPage() {
           </form>
 
           <div className="mt-6 pt-5 border-t border-slate-100">
-            <p className="text-xs text-slate-400 font-medium mb-2">Comptes de démonstration :</p>
-            <div className="space-y-1 text-xs text-slate-500">
-              <p><span className="font-mono bg-slate-100 px-1.5 py-0.5 rounded">admin@fund.eu</span> / <span className="font-mono bg-slate-100 px-1.5 py-0.5 rounded">Admin2024!</span> — Administrateur</p>
-              <p><span className="font-mono bg-slate-100 px-1.5 py-0.5 rounded">analyst@fund.eu</span> / <span className="font-mono bg-slate-100 px-1.5 py-0.5 rounded">Analyst2024!</span> — Analyste</p>
+            <p className="text-xs text-slate-400 font-medium mb-2">Comptes de démonstration (cliquer pour remplir) :</p>
+            <div className="space-y-1.5">
+              {DEMO_ACCOUNTS.map(acc => (
+                <button
+                  key={acc.email}
+                  type="button"
+                  onClick={() => fillDemo(acc)}
+                  className="w-full text-left flex items-center justify-between px-3 py-1.5 rounded-lg bg-slate-50 hover:bg-blue-50 transition-colors group"
+                >
+                  <span className="text-xs text-slate-600 font-mono">{acc.email}</span>
+                  <span className="text-xs text-slate-400 group-hover:text-blue-600">{acc.role}</span>
+                </button>
+              ))}
             </div>
           </div>
         </div>
 
-        <p className="text-center text-xs text-slate-500 mt-6">
-          Connexion sécurisée · JWT · TLS
-        </p>
+        <p className="text-center text-xs text-slate-500 mt-6">Connexion sécurisée · JWT · TLS</p>
       </div>
     </div>
   )

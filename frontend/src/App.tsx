@@ -7,30 +7,44 @@ import Overview from './components/Dashboard/Overview'
 import PortfolioList from './components/Portfolio/PortfolioList'
 import DealPipeline from './components/Deals/DealPipeline'
 import LPManagement from './components/LPs/LPManagement'
+import LPDashboard from './components/LPs/LPDashboard'
 import KPIMetrics from './components/Metrics/KPIMetrics'
 
-type Page = 'dashboard' | 'portfolio' | 'deals' | 'lps' | 'metrics'
+export type Page = 'dashboard' | 'portfolio' | 'deals' | 'lps' | 'metrics' | 'lp-dashboard'
+
+// Pages accessible by role
+const rolePages: Record<string, Page[]> = {
+  ADMIN:   ['dashboard', 'portfolio', 'deals', 'lps', 'metrics'],
+  ANALYST: ['dashboard', 'portfolio', 'deals', 'metrics'],
+  LP:      ['lp-dashboard'],
+}
 
 const pages: Record<Page, React.ComponentType> = {
-  dashboard: Overview,
-  portfolio: PortfolioList,
-  deals: DealPipeline,
-  lps: LPManagement,
-  metrics: KPIMetrics
+  'dashboard':    Overview,
+  'portfolio':    PortfolioList,
+  'deals':        DealPipeline,
+  'lps':          LPManagement,
+  'metrics':      KPIMetrics,
+  'lp-dashboard': LPDashboard,
 }
 
 function AppShell() {
   const { user } = useAuth()
-  const [page, setPage] = useState<Page>('dashboard')
+  const [page, setPage] = useState<Page>(() =>
+    user?.role === 'LP' ? 'lp-dashboard' : 'dashboard'
+  )
 
   if (!user) return <LoginPage />
 
-  const PageComponent = pages[page]
+  const allowed = rolePages[user.role] ?? []
+  const safePage = allowed.includes(page) ? page : allowed[0]
+  const PageComponent = pages[safePage]
+
   return (
     <div className="flex min-h-screen">
-      <Sidebar current={page} onChange={setPage} />
+      <Sidebar current={safePage} onChange={setPage} allowedPages={allowed} />
       <div className="flex-1 flex flex-col min-w-0">
-        <Header page={page} />
+        <Header page={safePage} />
         <main className="flex-1 p-6 overflow-auto">
           <PageComponent />
         </main>

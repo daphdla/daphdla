@@ -1,14 +1,18 @@
 const express = require('express');
-const router = express.Router();
-const { portfolio } = require('../data/mockData');
+const prisma = require('../db');
+const requireRole = require('../middleware/requireRole');
 
-router.get('/', (req, res) => {
-  res.json(portfolio);
+const router = express.Router();
+
+// ADMIN + ANALYST only
+router.get('/', requireRole('ADMIN', 'ANALYST'), async (_req, res) => {
+  const companies = await prisma.portfolioCompany.findMany({ orderBy: { entryDate: 'desc' } });
+  res.json(companies);
 });
 
-router.get('/:id', (req, res) => {
-  const company = portfolio.find(p => p.id === parseInt(req.params.id));
-  if (!company) return res.status(404).json({ error: 'Company not found' });
+router.get('/:id', requireRole('ADMIN', 'ANALYST'), async (req, res) => {
+  const company = await prisma.portfolioCompany.findUnique({ where: { id: parseInt(req.params.id) } });
+  if (!company) return res.status(404).json({ error: 'Société introuvable' });
   res.json(company);
 });
 
