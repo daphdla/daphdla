@@ -1,4 +1,4 @@
-import { LayoutDashboard, Briefcase, TrendingUp, Users, PieChart, Building2 } from 'lucide-react'
+import { LayoutDashboard, Briefcase, TrendingUp, Users, PieChart, Building2, type LucideIcon } from 'lucide-react'
 import { useAuth } from '../../auth'
 import type { Page } from '../../App'
 
@@ -8,7 +8,7 @@ interface SidebarProps {
   allowedPages: Page[]
 }
 
-const ALL_NAV: { id: Page; label: string; icon: React.ComponentType<{ size?: number }> }[] = [
+const ALL_NAV: { id: Page; label: string; icon: LucideIcon }[] = [
   { id: 'dashboard',    label: 'Vue d\'ensemble',   icon: LayoutDashboard },
   { id: 'portfolio',    label: 'Portefeuille',       icon: Briefcase },
   { id: 'deals',        label: 'Pipeline Deals',     icon: TrendingUp },
