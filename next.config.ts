@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Required for Docker standalone build
+  output: "standalone",
   experimental: {
     serverComponentsExternalPackages: ["@prisma/client", "bcryptjs"],
   },

@@ -1,0 +1,38 @@
+# Development override — hot reload + local DB
+# Usage: docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+services:
+  db:
+    ports:
+      - "5432:5432"    # expose DB port for local tools (Prisma Studio, DBeaver)
+
+  app:
+    build:
+      target: deps     # Stop at deps stage — mount source for hot reload
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+    environment:
+      NODE_ENV: development
+      NEXTAUTH_DEBUG: "1"
+    command: ["npm", "run", "dev"]
+    ports:
+      - "3000:3000"
+
+  # Prisma Studio — DB GUI at http://localhost:5555
+  prisma-studio:
+    image: node:20-alpine
+    container_name: pe_prisma_studio
+    working_dir: /app
+    volumes:
+      - .:/app
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-pe_user}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-pe_platform}
+    command: ["npx", "prisma", "studio", "--port", "5555", "--browser", "none"]
+    ports:
+      - "5555:5555"
+    depends_on:
+      - db
+    networks:
+      - pe_net
