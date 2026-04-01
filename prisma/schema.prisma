@@ -1,0 +1,493 @@
+// PE Platform — Prisma Schema
+// PostgreSQL database
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Auth ────────────────────────────────────────────────────────────────────
+
+enum UserRole {
+  PARTNER   // Full access — strategic decisions
+  ANALYST   // Data entry, models, due diligence
+  CFO       // Finance, valuations, audits
+  LP        // Read-only — LP portal only
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String
+  passwordHash  String
+  role          UserRole  @default(ANALYST)
+  avatarUrl     String?
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  lastLoginAt   DateTime?
+
+  // Relations
+  createdDeals      Deal[]         @relation("DealCreator")
+  assignedDeals     DealAssignment[]
+  auditLogs         AuditLog[]
+  notifications     Notification[]
+  lpRelation        LimitedPartner?
+
+  @@map("users")
+}
+
+// ─── Fund ─────────────────────────────────────────────────────────────────────
+
+model Fund {
+  id              String      @id @default(cuid())
+  name            String
+  vintage         Int         // Year
+  targetSize      Float       // EUR/USD millions
+  committedCapital Float      @default(0)
+  calledCapital   Float       @default(0)
+  currency        String      @default("EUR")
+  strategy        FundStrategy
+  status          FundStatus  @default(FUNDRAISING)
+  description     String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  // Relations
+  investments     Investment[]
+  capitalCalls    CapitalCall[]
+  distributions   Distribution[]
+  limitedPartners LimitedPartner[]
+
+  @@map("funds")
+}
+
+enum FundStrategy {
+  BUYOUT
+  GROWTH_EQUITY
+  VENTURE
+  SECONDARIES
+  INFRASTRUCTURE
+  REAL_ESTATE
+  CREDIT
+}
+
+enum FundStatus {
+  FUNDRAISING
+  INVESTING
+  HARVESTING
+  CLOSED
+}
+
+// ─── Portfolio Company ───────────────────────────────────────────────────────
+
+model Company {
+  id              String          @id @default(cuid())
+  name            String
+  sector          Sector
+  country         String
+  website         String?
+  description     String?
+  foundedYear     Int?
+  employeeCount   Int?
+  revenue         Float?          // Latest annual revenue (EUR millions)
+  ebitda          Float?          // Latest EBITDA (EUR millions)
+  status          CompanyStatus   @default(ACTIVE)
+  logoUrl         String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  // Relations
+  investments     Investment[]
+  valuations      Valuation[]
+  kpiSnapshots    KpiSnapshot[]
+  documents       Document[]      @relation("CompanyDocuments")
+  deals           Deal[]          @relation("DealCompany")
+
+  @@map("companies")
+}
+
+enum Sector {
+  TECHNOLOGY
+  HEALTHCARE
+  FINANCIAL_SERVICES
+  CONSUMER
+  INDUSTRIALS
+  ENERGY
+  REAL_ESTATE
+  MEDIA
+  EDUCATION
+  OTHER
+}
+
+enum CompanyStatus {
+  ACTIVE
+  EXITED
+  WRITTEN_OFF
+  WATCHLIST
+}
+
+// ─── Investment ───────────────────────────────────────────────────────────────
+
+model Investment {
+  id                String      @id @default(cuid())
+  fundId            String
+  companyId         String
+  entryDate         DateTime
+  exitDate          DateTime?
+  investedAmount    Float       // EUR millions
+  currentValue      Float       // EUR millions (latest mark)
+  ownershipPct      Float       // %
+  instrumentType    InstrumentType
+  entryEvMultiple   Float?      // EV/EBITDA at entry
+  exitEvMultiple    Float?      // EV/EBITDA at exit
+  notes             String?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  // Relations
+  fund              Fund        @relation(fields: [fundId], references: [id])
+  company           Company     @relation(fields: [companyId], references: [id])
+
+  @@map("investments")
+}
+
+enum InstrumentType {
+  EQUITY
+  PREFERRED_EQUITY
+  CONVERTIBLE_NOTE
+  DEBT
+  MEZZANINE
+  WARRANT
+}
+
+// ─── Valuation ────────────────────────────────────────────────────────────────
+
+model Valuation {
+  id              String            @id @default(cuid())
+  companyId       String
+  valuationDate   DateTime
+  nav             Float             // Net Asset Value (EUR millions)
+  methodology     ValuationMethod
+  evMultiple      Float?
+  ltmEbitda       Float?
+  ltmRevenue      Float?
+  notes           String?
+  createdAt       DateTime          @default(now())
+
+  // Relations
+  company         Company           @relation(fields: [companyId], references: [id])
+
+  @@map("valuations")
+}
+
+enum ValuationMethod {
+  COMPARABLE_COMPANIES
+  DCF
+  COST
+  RECENT_TRANSACTION
+  NAV
+}
+
+// ─── KPI Snapshot ─────────────────────────────────────────────────────────────
+
+model KpiSnapshot {
+  id              String    @id @default(cuid())
+  companyId       String
+  periodDate      DateTime  // End of quarter date
+  revenue         Float?    // EUR millions
+  ebitda          Float?
+  ebitdaMargin    Float?    // %
+  revenueGrowth   Float?    // YoY %
+  headcount       Int?
+  arr             Float?    // Annual Recurring Revenue (SaaS)
+  nrr             Float?    // Net Revenue Retention (SaaS)
+  createdAt       DateTime  @default(now())
+
+  // Relations
+  company         Company   @relation(fields: [companyId], references: [id])
+
+  @@unique([companyId, periodDate])
+  @@map("kpi_snapshots")
+}
+
+// ─── Deal Flow ────────────────────────────────────────────────────────────────
+
+model Deal {
+  id              String        @id @default(cuid())
+  name            String
+  companyId       String?
+  stage           DealStage     @default(SCREENING)
+  priority        DealPriority  @default(MEDIUM)
+  sector          Sector?
+  country         String?
+  targetRevenue   Float?        // EUR millions
+  targetEbitda    Float?
+  askingPrice     Float?        // EV in EUR millions
+  creatorId       String
+  sourceType      SourceType
+  sourceName      String?       // Intermediary/contact name
+  probability     Int           @default(50)  // % chance to close
+  expectedCloseDate DateTime?
+  notes           String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  // Relations
+  company         Company?      @relation("DealCompany", fields: [companyId], references: [id])
+  creator         User          @relation("DealCreator", fields: [creatorId], references: [id])
+  assignments     DealAssignment[]
+  dueDiligences   DueDiligence[]
+  documents       Document[]    @relation("DealDocuments")
+  activities      DealActivity[]
+
+  @@map("deals")
+}
+
+enum DealStage {
+  SCREENING       // Initial review
+  FIRST_MEETING   // Met management
+  LOI             // Letter of Intent
+  DUE_DILIGENCE   // Full DD process
+  IC_APPROVED     // Investment Committee approved
+  CLOSING         // Legal / closing
+  CLOSED          // Deal done
+  PASSED          // Declined
+}
+
+enum DealPriority {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum SourceType {
+  PROPRIETARY
+  INTERMEDIARY
+  MANAGEMENT
+  CO_INVESTOR
+  SECONDARY
+  INBOUND
+}
+
+model DealAssignment {
+  id        String   @id @default(cuid())
+  dealId    String
+  userId    String
+  role      String   // "Lead", "Support", "IC Member"
+  createdAt DateTime @default(now())
+
+  deal      Deal     @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@unique([dealId, userId])
+  @@map("deal_assignments")
+}
+
+model DealActivity {
+  id          String    @id @default(cuid())
+  dealId      String
+  type        String    // "stage_change", "note", "document_upload", "meeting"
+  description String
+  metadata    Json?
+  createdAt   DateTime  @default(now())
+
+  deal        Deal      @relation(fields: [dealId], references: [id], onDelete: Cascade)
+
+  @@map("deal_activities")
+}
+
+// ─── Due Diligence ────────────────────────────────────────────────────────────
+
+model DueDiligence {
+  id          String    @id @default(cuid())
+  dealId      String
+  workstream  DDWorkstream
+  status      DDStatus  @default(IN_PROGRESS)
+  findings    String?
+  riskLevel   RiskLevel @default(MEDIUM)
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  deal        Deal      @relation(fields: [dealId], references: [id], onDelete: Cascade)
+
+  @@map("due_diligences")
+}
+
+enum DDWorkstream {
+  FINANCIAL
+  LEGAL
+  COMMERCIAL
+  OPERATIONAL
+  TAX
+  ESG
+  TECHNOLOGY
+  HR
+}
+
+enum DDStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+  RED_FLAG
+}
+
+enum RiskLevel {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+// ─── Limited Partners ─────────────────────────────────────────────────────────
+
+model LimitedPartner {
+  id              String    @id @default(cuid())
+  userId          String    @unique
+  fundId          String
+  commitmentSize  Float     // EUR millions
+  calledAmount    Float     @default(0)
+  distributedAmount Float   @default(0)
+  lpType          LpType
+  country         String?
+  onboardedAt     DateTime  @default(now())
+
+  user            User      @relation(fields: [userId], references: [id])
+  fund            Fund      @relation(fields: [fundId], references: [id])
+  capitalCalls    CapitalCall[] @relation("LPCapitalCalls")
+  distributions   Distribution[] @relation("LPDistributions")
+
+  @@map("limited_partners")
+}
+
+enum LpType {
+  PENSION_FUND
+  FAMILY_OFFICE
+  ENDOWMENT
+  INSURANCE
+  FUND_OF_FUNDS
+  SOVEREIGN_WEALTH
+  BANK
+  INDIVIDUAL
+}
+
+model CapitalCall {
+  id              String    @id @default(cuid())
+  fundId          String
+  lpId            String?
+  callDate        DateTime
+  amount          Float     // EUR millions
+  purpose         String?
+  dueDate         DateTime
+  paidAt          DateTime?
+  status          PaymentStatus @default(PENDING)
+  createdAt       DateTime  @default(now())
+
+  fund            Fund      @relation(fields: [fundId], references: [id])
+  lp              LimitedPartner? @relation("LPCapitalCalls", fields: [lpId], references: [id])
+
+  @@map("capital_calls")
+}
+
+model Distribution {
+  id              String    @id @default(cuid())
+  fundId          String
+  lpId            String?
+  distributionDate DateTime
+  amount          Float
+  type            DistributionType
+  notes           String?
+  createdAt       DateTime  @default(now())
+
+  fund            Fund      @relation(fields: [fundId], references: [id])
+  lp              LimitedPartner? @relation("LPDistributions", fields: [lpId], references: [id])
+
+  @@map("distributions")
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  OVERDUE
+}
+
+enum DistributionType {
+  RETURN_OF_CAPITAL
+  DIVIDEND
+  CARRIED_INTEREST
+  MANAGEMENT_FEE_OFFSET
+}
+
+// ─── Documents ────────────────────────────────────────────────────────────────
+
+model Document {
+  id          String        @id @default(cuid())
+  name        String
+  type        DocumentType
+  url         String        // S3/blob storage URL
+  sizeBytes   Int?
+  companyId   String?
+  dealId      String?
+  uploadedAt  DateTime      @default(now())
+
+  company     Company?      @relation("CompanyDocuments", fields: [companyId], references: [id])
+  deal        Deal?         @relation("DealDocuments", fields: [dealId], references: [id])
+
+  @@map("documents")
+}
+
+enum DocumentType {
+  CIM            // Confidential Information Memorandum
+  FINANCIAL_MODEL
+  LEGAL
+  NDA
+  LOI
+  SPA            // Share Purchase Agreement
+  BOARD_DECK
+  LP_REPORT
+  OTHER
+}
+
+// ─── Audit & Notifications ────────────────────────────────────────────────────
+
+model AuditLog {
+  id          String    @id @default(cuid())
+  userId      String
+  action      String
+  entity      String    // "deal", "company", "valuation", etc.
+  entityId    String
+  metadata    Json?
+  ipAddress   String?
+  createdAt   DateTime  @default(now())
+
+  user        User      @relation(fields: [userId], references: [id])
+
+  @@map("audit_logs")
+}
+
+model Notification {
+  id          String    @id @default(cuid())
+  userId      String
+  title       String
+  message     String
+  type        NotifType @default(INFO)
+  read        Boolean   @default(false)
+  link        String?
+  createdAt   DateTime  @default(now())
+
+  user        User      @relation(fields: [userId], references: [id])
+
+  @@map("notifications")
+}
+
+enum NotifType {
+  INFO
+  WARNING
+  SUCCESS
+  ERROR
+}
