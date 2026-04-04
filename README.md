@@ -1,4 +1,4 @@
-# PE Dashboard — European Growth Fund III
+# PE Dashboard — European Growth Fund III 
 
 Application de Private Equity pour la gestion et le suivi du portefeuille.
 
