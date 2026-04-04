@@ -16,7 +16,6 @@ async function main() {
       { name: 'DataSphere AI', sector: 'Intelligence Artificielle', country: 'France', entryDate: new Date('2023-02-14'), entryValuation: 35000000, currentValuation: 52000000, equity: 30, revenue: 8200000, ebitda: 1100000, employees: 68, stage: 'Early Growth', status: 'Active', irr: 28.4, moic: 1.49 },
       { name: 'LogiChain Europe', sector: 'Logistique / Supply Chain', country: 'Belgium', entryDate: new Date('2021-11-05'), entryValuation: 40000000, currentValuation: 58000000, equity: 38, revenue: 54000000, ebitda: 7800000, employees: 520, stage: 'Growth', status: 'Active', irr: 22.1, moic: 1.45 },
     ],
-    skipDuplicates: true,
   });
 
   // ── LPs ──────────────────────────────────────────────────────────────────
@@ -82,7 +81,7 @@ async function main() {
       id: 1, fundName: 'European Growth Fund III', fundSize: 350000000, vintage: 2019,
       totalCommitted: 210000000, totalCalled: 161500000, totalDistributed: 49500000, totalNAV: 254000000,
       grossIRR: 28.4, netIRR: 24.1, grossMOIC: 2.19, netMOIC: 1.88, dpi: 0.31, tvpi: 1.88, rvpi: 1.57,
-      navByQuarter: [
+      navByQuarter: JSON.stringify([
         { quarter: 'Q1 2020', nav: 42000000 }, { quarter: 'Q2 2020', nav: 68000000 },
         { quarter: 'Q3 2020', nav: 75000000 }, { quarter: 'Q4 2020', nav: 92000000 },
         { quarter: 'Q1 2021', nav: 108000000 }, { quarter: 'Q2 2021', nav: 134000000 },
@@ -92,17 +91,17 @@ async function main() {
         { quarter: 'Q1 2023', nav: 208000000 }, { quarter: 'Q2 2023', nav: 220000000 },
         { quarter: 'Q3 2023', nav: 235000000 }, { quarter: 'Q4 2023', nav: 242000000 },
         { quarter: 'Q1 2024', nav: 248000000 }, { quarter: 'Q2 2024', nav: 254000000 },
-      ],
-      sectorAllocation: [
+      ]),
+      sectorAllocation: JSON.stringify([
         { sector: 'SaaS / B2B', percentage: 22 }, { sector: 'MedTech', percentage: 19 },
         { sector: 'CleanTech', percentage: 15 }, { sector: 'FinTech', percentage: 8 },
         { sector: 'AI', percentage: 12 }, { sector: 'Logistique', percentage: 14 }, { sector: 'Autres', percentage: 10 },
-      ],
-      geoAllocation: [
+      ]),
+      geoAllocation: JSON.stringify([
         { country: 'France', percentage: 34 }, { country: 'Germany', percentage: 22 },
         { country: 'Spain', percentage: 16 }, { country: 'Netherlands', percentage: 14 },
         { country: 'Belgium', percentage: 8 }, { country: 'Autres', percentage: 6 },
-      ],
+      ]),
     },
   });
 

@@ -3,14 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
-}
-
-enum Role {
-  ADMIN
-  ANALYST
-  LP
 }
 
 model User {
@@ -18,7 +12,7 @@ model User {
   email        String   @unique
   passwordHash String
   name         String
-  role         Role     @default(ANALYST)
+  role         String   @default("ANALYST")
   initials     String
   lpId         Int?
   lp           LP?      @relation(fields: [lpId], references: [id])
@@ -62,8 +56,8 @@ model Deal {
   contactDate     DateTime
   owner           String
   priority        String
-  notes           String          @db.Text
-  thesis          String?         @db.Text
+  notes           String
+  thesis          String?
   lbo             DealLBO?
   milestones      DealMilestone[]
   createdAt       DateTime        @default(now())
@@ -129,7 +123,7 @@ model FundConfig {
   dpi              Float
   tvpi             Float
   rvpi             Float
-  navByQuarter     Json
-  sectorAllocation Json
-  geoAllocation    Json
+  navByQuarter     String
+  sectorAllocation String
+  geoAllocation    String
 }
