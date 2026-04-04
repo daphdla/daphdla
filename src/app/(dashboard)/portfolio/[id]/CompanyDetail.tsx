@@ -210,7 +210,8 @@ export function CompanyDetail({ id }: CompanyDetailProps) {
                 render: (i) => formatDate(i.entryDate),
               },
             ]}
-            data={company.investments}
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            data={company.investments as any[]}
           />
         </Card>
       </div>
@@ -220,7 +221,8 @@ export function CompanyDetail({ id }: CompanyDetailProps) {
         <Card>
           <CardHeader title="KPIs Opérationnels" subtitle="Données trimestrielles" />
           <Table
-            keyExtractor={(k) => k.id}
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            keyExtractor={(k: any) => k.id}
             columns={[
               { key: "periodDate", header: "Période", render: (k) => formatDate(k.periodDate) },
               {
@@ -258,7 +260,8 @@ export function CompanyDetail({ id }: CompanyDetailProps) {
                 render: (k) => k.headcount?.toLocaleString("fr-FR") ?? "—",
               },
             ]}
-            data={company.kpiSnapshots}
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            data={company.kpiSnapshots as any[]}
           />
         </Card>
       )}

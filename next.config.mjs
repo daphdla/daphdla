@@ -1,6 +1,6 @@
-import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
+
+const nextConfig = {
   // Required for Docker standalone build
   output: "standalone",
   experimental: {

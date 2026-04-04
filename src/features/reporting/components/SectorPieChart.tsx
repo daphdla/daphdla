@@ -69,7 +69,7 @@ export function SectorPieChart({ data }: SectorPieChartProps) {
         <Legend
           wrapperStyle={{ fontSize: "11px", paddingTop: "8px" }}
           formatter={(value, entry) => {
-            const item = entry.payload as SectorAllocation & { name: string };
+            const item = entry.payload as unknown as SectorAllocation & { name: string };
             return `${value} (${item.percentage.toFixed(1)}%)`;
           }}
         />

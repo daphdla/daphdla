@@ -45,7 +45,7 @@ export async function exportPortfolioToPDF(
   fundName: string
 ): Promise<void> {
   const { default: jsPDF } = await import("jspdf");
-  // @ts-expect-error — jspdf-autotable extends prototype
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   await import("jspdf-autotable");
 
   const doc = new jsPDF({ orientation: "landscape" });

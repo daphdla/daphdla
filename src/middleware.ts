@@ -6,7 +6,7 @@ export default auth((req) => {
   const session = req.auth;
 
   // Public routes
-  if (pathname.startsWith("/login") || pathname.startsWith("/api/auth")) {
+  if (pathname.startsWith("/login") || pathname.startsWith("/api/auth") || pathname === "/api/health") {
     // Redirect authenticated users away from login page
     if (session && pathname === "/login") {
       return NextResponse.redirect(new URL("/", req.url));

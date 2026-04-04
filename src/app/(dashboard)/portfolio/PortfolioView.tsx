@@ -100,7 +100,7 @@ export function PortfolioView() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-          {companies?.map((company) => (
+          {companies?.map((company: Parameters<typeof CompanyCard>[0]["company"] & { id: string }) => (
             <CompanyCard
               key={company.id}
               company={company}

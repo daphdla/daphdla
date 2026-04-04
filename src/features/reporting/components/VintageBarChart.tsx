@@ -50,7 +50,7 @@ export function VintageBarChart({ data }: VintageBarChartProps) {
         />
         <Legend
           wrapperStyle={{ fontSize: "12px", paddingTop: "12px" }}
-          formatter={(v) => ({ moic: "MOIC", irr: "TRI", dpi: "DPI" }[v] ?? v)}
+          formatter={(v: string) => (({ moic: "MOIC", irr: "TRI", dpi: "DPI" } as Record<string, string>)[v] ?? v)}
         />
         <ReferenceLine yAxisId="moic" y={2} stroke="#10b981" strokeDasharray="4 4" strokeWidth={1.5} />
         <Bar yAxisId="moic" dataKey="moic" fill="#4f46e5" radius={[4, 4, 0, 0]} />

@@ -43,7 +43,7 @@ export async function writeAuditLog(
 ): Promise<void> {
   try {
     await prisma.auditLog.create({
-      data: { userId, action, entity, entityId, metadata },
+      data: { userId, action, entity, entityId, metadata: metadata as never },
     });
   } catch {
     // Audit log failure should never block the main operation
