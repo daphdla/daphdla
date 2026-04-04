@@ -4,8 +4,8 @@ import {
   ResponsiveContainer, BarChart, Bar, Legend
 } from 'recharts'
 import { TrendingUp, DollarSign, BarChart3, ArrowUpRight, Building2, Calendar } from 'lucide-react'
-import axios from 'axios'
 import { useAuth } from '../../auth'
+import { LPS } from '../../api'
 import type { LP } from '../../types'
 
 const fmt = (n: number) => {
@@ -42,10 +42,10 @@ export default function LPDashboard() {
   const [error, setError] = useState('')
 
   useEffect(() => {
-    axios.get<LP>('/api/lps/me')
-      .then(r => { setLP(r.data); setLoading(false) })
-      .catch(() => { setError('Impossible de charger vos données.'); setLoading(false) })
-  }, [])
+    const found = LPS.find(l => l.id === user?.lpId) || null
+    setLP(found)
+    setLoading(false)
+  }, [user])
 
   if (loading) {
     return (
