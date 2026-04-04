@@ -1,8 +1,6 @@
 
 
 const nextConfig = {
-  // Required for Docker standalone build
-  output: "standalone",
   experimental: {
     serverComponentsExternalPackages: ["@prisma/client", "bcryptjs"],
   },

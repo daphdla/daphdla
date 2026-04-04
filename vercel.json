@@ -3,11 +3,6 @@
   "buildCommand": "prisma generate && prisma db push --skip-generate && tsx prisma/seed.ts && next build",
   "installCommand": "npm ci",
   "regions": ["cdg1"],
-  "env": {
-    "DATABASE_URL": "@pe-database-url",
-    "AUTH_SECRET": "@pe-auth-secret",
-    "AUTH_URL": "@pe-auth-url"
-  },
   "headers": [
     {
       "source": "/(.*)",
