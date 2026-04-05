@@ -1,0 +1,8 @@
+.env
+__pycache__/
+*.pyc
+*.pyo
+data/cache/
+data/historical/backtest_results.csv
+*.joblib
+*.png
