@@ -31,6 +31,7 @@ from config import POLL_INTERVAL, MISPRICING_THRESHOLD, BANKROLL
 from scraper.misprice_scraper import scrape_misprice_app
 from scraper.odds_api import get_all_odds
 from scraper.polymarket import get_active_markets
+from scraper.kalshi import get_active_markets as get_kalshi_markets, cross_market_mispricing
 from analysis.mispricing import MispricingDetector, MispricingAlert
 from analysis.backtest import Backtester
 from models.xgboost_model import XGBBetModel
@@ -65,14 +66,51 @@ async def run_scan(detector: MispricingDetector) -> list[MispricingAlert]:
     logger.info("Fetching Polymarket markets …")
     poly_markets = get_active_markets(limit=200, min_volume=500)
 
-    # 3. Try misprice.app (Playwright scrape — may fail silently)
+    # 3. Fetch Kalshi markets + cross-market arb
+    logger.info("Fetching Kalshi markets …")
+    kalshi_markets = get_kalshi_markets(limit=200, min_volume=500)
+    kalshi_arb = cross_market_mispricing(kalshi_markets, poly_markets, threshold=MISPRICING_THRESHOLD)
+    if kalshi_arb:
+        logger.info("Kalshi↔Polymarket: %d cross-market opportunities", len(kalshi_arb))
+
+    # 4. Try misprice.app (Playwright scrape — may fail silently)
     logger.info("Trying misprice.app scrape …")
     misprice_rows = await scrape_misprice_app()
     if misprice_rows:
         logger.info("misprice.app: %d rows scraped", len(misprice_rows))
 
-    # 4. Detect mispricings
+    # 5. Detect mispricings vs sportsbooks
     all_alerts = detector.detect_from_odds_events(odds_events, poly_markets)
+
+    # 5b. Add Kalshi↔Polymarket cross-market alerts
+    from models.kelly import kelly_bet as _kelly_bet
+    for arb in kalshi_arb:
+        # The "long" side has the lower probability → better odds
+        if arb["long_side"] == "kalshi":
+            decimal_odds = 1.0 / arb["kalshi_prob"] if arb["kalshi_prob"] > 0 else 0
+            true_prob = arb["poly_prob"]
+        else:
+            decimal_odds = 1.0 / arb["poly_prob"] if arb["poly_prob"] > 0 else 0
+            true_prob = arb["kalshi_prob"]
+
+        if decimal_odds <= 1.0 or true_prob <= 0:
+            continue
+        k = _kelly_bet(true_prob, decimal_odds, bankroll=BANKROLL)
+        all_alerts.append(MispricingAlert(
+            event_id=f"kalshi_{arb['kalshi_ticker']}",
+            event_name=arb["kalshi_title"][:80],
+            sport="prediction_market",
+            side=arb["long_side"],
+            commence_time=kalshi_markets[0].close_time if kalshi_markets else "",
+            book_decimal_odds=decimal_odds,
+            book_implied_prob=1.0 / decimal_odds,
+            true_prob=true_prob,
+            edge=arb["gap"],
+            kelly=k,
+            source_book=arb["long_side"],
+            prediction_market_prob=arb["poly_prob"],
+            num_books=2,
+        ))
 
     # 5. Also process misprice.app rows as extra signals
     for row in misprice_rows:
