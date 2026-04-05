@@ -6,3 +6,5 @@ dist/
 .DS_Store
 backend/.env
 backend/prisma/dev.db
+*.pyc
+__pycache__/
